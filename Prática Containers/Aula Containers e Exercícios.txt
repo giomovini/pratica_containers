@@ -1,0 +1,113 @@
+# Testar a instalação do Docker desktop
+docker run hello-world
+
+# Baixar a imagem busybox
+docker pull busybox
+
+# checando as imagens que temos baixadas
+docker ps
+
+# executando a imagem busybox
+docker run busybox
+
+# nada aconteceu, tudo bem. chamamos o container e não passamos nenhuma instrução para ele, vamos fazer um pouco diferente
+
+docker run busybox echo "Aula prática de containers"
+
+# parece que não aconteceu nada aqui, foi so um echo, vamos checar 
+
+docker ps -a 
+
+# voces devem ter observado que o container executou o echo e foi finalizado, sera que conseguimos executar mais coisas nele
+
+docker run -it busybox sh
+
+ls -l
+cd /home
+cd ..
+uptime
+exit
+
+# Vamos excluir o container busybox que acessamos no terminal, pegue o ID dele e cole apos o docker rm 
+
+docker rm ID_DOCKER
+
+# uma maneira mais eficiente e pegar os containers que estao com status exited, ou seja, finalizados e apagar
+
+docker rm $(docker ps -a -q -f status=exited)
+
+# outra forma seria executar um docker container prune
+
+docker container prune
+
+# vamos executar um servidor web, em um site estatico com uma imagem padrao de testes. usamos --rm para remover automaticamente o container quando finalizado e --it especifica uso do terminal interativo para podermos pressionar um ctrl+c para finalizar a execução do container
+
+docker run --rm -it prakhar1989/static-site
+
+# deve ter aparecido uma mensagem de Nginx running, ou seja, o site esta no ar. mas qual porta devemos  usar para acessar, vamos parar nosso container e executa-lo novamente
+
+ctrl+c
+
+# vamos executa-lo novamente com docker run e vamos executar em modo detached (desanexado), ou seja, manteremos nosso terminal livre enquanto o container executa
+
+docker run -d -P --name site-estatico prakhar1989/static-site
+
+# vamos checar a porta que o site esta usando 
+
+docker port site-estatico
+
+# acesse localhost:32768
+
+# vamos parar o nosso container do site estatico
+
+docker stop site-estatico
+
+
+### Baixando imagens ###
+
+docker pull ubuntu:latest
+
+docker pull python:3.11
+
+docker pull mysql:latest
+
+docker images
+
+### Imagem padrão para execução de uma aplicação especifica
+
+# Baixe, salve e decompacte o conteudo do arquivo app_flask.zip
+# Navegue até a pasta onde salvou o conteudo do arquivo app_flask
+# para executar o build é necessario criar uma conta no Docker Hub.
+
+docker build -t leandroromualdo/catnip .
+
+# agora vamos executar  nosso container
+
+docker run -p 8888:5000 leandroromualdo/catnip
+
+# Vamos acessar a aplicação web
+
+http://localhost:8888/
+
+#### Docker Build para capturar dados de um site e apresentar em um site. 
+
+# baixe, salve e descompacte o conteudo do arquivo yahoo_finance.zip
+# Navegue até a pasta onde salvou o conteudo do arquivo app_flask
+# para executar o build é necessario criar uma conta no Docker Hub.
+
+docker build -t leandroromualdo/webscrapping.v1 .
+
+# agora vamos executar  nosso container
+
+docker run -p 8888:5000 leandroromualdo/webscrapping.v1
+
+
+### Exercícios ###
+
+1. Faça o build de uma imagem contendo Dockerfile, requirements.txt e um script Python que capture dados de 4 cidades a sua escolha e traga os dados na tela em formato Json. Os dados podem ser capturados na API de dados abertos Brasil (https://pypi.org/project/DadosAbertosBrasil/)
+
+2. Faça o build de uma imagem contendo Dockerfile, requirements.txt e um script Python que capture dados climáticos e apresente na tela em um Json. Os dados podem ser capturados na API Weather - Get Current Conditions (https://learn.microsoft.com/pt-br/rest/api/maps/weather/get-current-conditions?view=rest-maps-2023-06-01&tabs=HTTP)
+
+3. Faça build de uma imagem contendo Dockerfile, requirements.txt e um script python que capture os dados dos textos de Nietzche e apresente na tela. Os dados podem ser capturados no endereço https://s3.amazonaws.com/text-datasets/nietzsche.txt.
+
+
